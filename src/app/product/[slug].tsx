@@ -6,24 +6,28 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useToast } from "react-native-toast-notifications";
-import { PRODUCTS } from "../../../assets/products";
 import { useCartStore } from "../../store/card-store";
 import { useState } from "react";
+import { getProduct } from "../../api/api";
 
 const ProductDetials = () => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const toast = useToast();
 
-  const product = PRODUCTS.find((product) => product.slug === slug);
-  if (!product) return <Redirect href="/404" />;
+  const { data: product, error, isLoading } = getProduct(slug);
 
   const { items, addItem, incrementItem, decrementItem } = useCartStore();
-  const cartItem = items.find((item) => item.id === product.id);
-  const initialQuantity = cartItem ? cartItem.quantity : 0;
 
+  const cartItem = items.find((item) => item.id === product?.id);
+  const initialQuantity = cartItem ? cartItem.quantity : 0;
   const [quantity, setQuantity] = useState(initialQuantity);
+
+  if (isLoading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error.message}</Text>;
+  if (!product) return <Redirect href="/404" />;
   const increaseQuantity = () => {
     if (quantity < product.maxQuantity) {
       setQuantity((prev) => prev + 1);
@@ -64,7 +68,7 @@ const ProductDetials = () => {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: product.title }} />
-      <Image source={product.heroImage} style={styles.heroImage} />
+      <Image source={{ uri: product.heroImage }} style={styles.heroImage} />
       <View style={{ padding: 16, flex: 1 }}>
         <Text style={styles.title}>{product.title}</Text>
         <Text style={styles.slug}>{product.slug}</Text>
@@ -73,10 +77,10 @@ const ProductDetials = () => {
           <Text style={styles.price}>Total Price: ${totalPrice}</Text>
         </View>
         <FlatList
-          data={product.imagesUrl}
+          data={product.imageUrl}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <Image source={item} style={styles.image} />
+            <Image source={{ uri: item }} style={styles.image} />
           )}
           horizontal
           showsHorizontalScrollIndicator={false}
