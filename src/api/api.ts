@@ -69,3 +69,26 @@ export const getCategoryAndProducts = (categorySlug: string) => {
     },
   });
 };
+export const getMyOrders = () => {
+  const {
+    user: { id },
+  } = useAuth();
+
+  return useQuery({
+    queryKey: ["orders", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("order")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .eq("user", id);
+
+      if (error)
+        throw new Error(
+          "An error occurred while fetching orders: " + error.message
+        );
+
+      return data;
+    },
+  });
+};
