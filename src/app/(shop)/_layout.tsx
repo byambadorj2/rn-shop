@@ -34,17 +34,19 @@ const TabsLayout = () => {
         <Tabs.Screen
           name="index"
           options={{
-            tabBarLabel: "Shop",
-            tabBarIcon: (props) => (
-              <TabBarIcon name="shopping-cart" {...props} />
-            ),
+            title: "shop",
+            tabBarIcon(props) {
+              return <TabBarIcon {...props} name="shopping-cart" />;
+            },
           }}
         />
         <Tabs.Screen
           name="orders"
           options={{
-            tabBarLabel: "Orders",
-            tabBarIcon: (props) => <TabBarIcon name="book" {...props} />,
+            title: "Orders",
+            tabBarIcon(props) {
+              return <TabBarIcon {...props} name="book" />;
+            },
           }}
         />
       </Tabs>

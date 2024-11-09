@@ -55,7 +55,7 @@ const Orders = () => {
     );
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{ title: "Orders" }} />r
+      <Stack.Screen options={{ title: "Orders" }} />
       <FlatList
         data={orders}
         keyExtractor={(item) => item.id.toString()}

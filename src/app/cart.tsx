@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { useCartStore } from "../store/card-store";
 import { StatusBar } from "expo-status-bar";
+import { createOrder, createOrderItem } from "../api/api";
+import { parse } from "date-fns";
 
 type CartItemType = {
   id: number;
@@ -73,10 +75,41 @@ export default function Cart() {
     incrementItem,
     decrementItem,
     getTotalPrice,
+    resetCart,
   } = useCartStore();
-  const handleCheckout = () => {
-    Alert.alert("Proceeding to Checkout", `Total amount: $${getTotalPrice}`);
+
+  const { mutateAsync: createSupabaseOrder } = createOrder();
+  const { mutateAsync: createSupabaseOrderItem } = createOrderItem();
+
+  const handleCheckout = async () => {
+    const totalPrice = parseFloat(getTotalPrice());
+    try {
+      await createSupabaseOrder(
+        { totalPrice },
+        {
+          onSuccess: (data) => {
+            createSupabaseOrderItem(
+              items.map((item) => ({
+                orderId: data.id,
+                productId: item.id,
+                quantity: item.quantity,
+              })),
+              {
+                onSuccess: () => {
+                  alert("Order created successfully");
+                  resetCart();
+                },
+              }
+            );
+          },
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while creating the order");
+    }
   };
+
   return (
     <View style={styles.container}>
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />

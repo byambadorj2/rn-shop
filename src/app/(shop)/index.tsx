@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { PRODUCTS } from "../../../assets/products";
 import ProductListItem from "../../components/product-list-item";
 import ListHeader from "../../components/list-header";
 import { getProductsAndCategories } from "../../api/api";
@@ -26,7 +25,7 @@ const Home = () => {
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         ListHeaderComponent={<ListHeader categories={data.categories} />}
-        contentContainerStyle={styles.flatListContainer}
+        contentContainerStyle={styles.flatListContent}
         columnWrapperStyle={styles.flatListColumn}
         style={{ paddingHorizontal: 10, paddingVertical: 5 }}
       />
@@ -37,7 +36,7 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
-  flatListContainer: {
+  flatListContent: {
     paddingBottom: 20,
   },
   flatListColumn: {
